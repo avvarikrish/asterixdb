@@ -42,6 +42,8 @@
   <modules>
     <module>hyracks-fullstack</module>
     <module>asterixdb</module>
+    <module>hyracks-prometheus</module>
+    <module>hyracks-fullstack/hyracks/hyracks-prometheus</module>
   </modules>
 
 </project>
