@@ -2,6 +2,7 @@ package org.apache.hyracks.prometheus;
 
 import io.prometheus.client.Counter;
 import io.prometheus.client.exporter.MetricsServlet;
+import io.prometheus.client.exporter.HTTPServer;
 import io.prometheus.client.hotspot.DefaultExports;
 
 import javax.servlet.ServletException;
@@ -15,33 +16,43 @@ import java.io.IOException;
 
 
 public class Process {
-    static class ExampleServlet extends HttpServlet {
-        static final Counter requests = Counter.build()
-                .name("hello_worlds_total")
-                .help("Number of hello worlds served.").register();
-
-        @Override
-        protected void doGet(final HttpServletRequest req, final HttpServletResponse resp)
-                throws ServletException, IOException {
-            resp.getWriter().println("Hello World!");
-            // Increment the number of requests.
-            requests.inc();
-        }
-    }
+//    static class ExampleServlet extends HttpServlet {
+//        static final Counter requests = Counter.build()
+//                .name("hello_worlds_total")
+//                .help("Number of hello worlds served.").register();
+//
+//        @Override
+//        protected void doGet(final HttpServletRequest req, final HttpServletResponse resp)
+//                throws ServletException, IOException {
+//            resp.getWriter().println("Hello World!");
+//            // Increment the number of requests.
+//            requests.inc();
+//        }
+//    }
     public static void main(String[] args) throws Exception {
-        Server server = new Server(1234);
-        ServletContextHandler context = new ServletContextHandler();
-        context.setContextPath("/");
-        server.setHandler(context);
-        // Expose our example servlet.
-        context.addServlet(new ServletHolder(new ExampleServlet()), "/");
-        // Expose Promtheus metrics.
-        context.addServlet(new ServletHolder(new MetricsServlet()), "/metrics");
+//        Server server = new Server(1234);
+//        ServletContextHandler context = new ServletContextHandler();
+////        context.setContextPath("/");
+//        server.setHandler(context);
+//        // Expose our example servlet.
+////        context.addServlet(new ServletHolder(new ExampleServlet()), "/");
+//        // Expose Promtheus metrics.
+//        context.addServlet(new ServletHolder(new MetricsServlet()), "/metrics");
         // Add metrics about CPU, JVM memory etc.
-        DefaultExports.initialize();
-
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                System.out.println("PROMETHEUS VERSION");
+                DefaultExports.initialize();
+                try {
+                    HTTPServer server = new HTTPServer(1234);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
         // Start the webserver.
-        server.start();
-        server.join();
+//        server.start();
+//        server.join();
     }
 }

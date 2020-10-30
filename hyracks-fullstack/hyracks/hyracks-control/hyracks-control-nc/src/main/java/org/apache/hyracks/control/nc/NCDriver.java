@@ -34,6 +34,9 @@ import org.apache.logging.log4j.core.config.ConfigurationFactory;
 import org.apache.logging.log4j.core.config.ConfigurationSource;
 import org.kohsuke.args4j.CmdLineException;
 
+import io.prometheus.client.exporter.HTTPServer;
+import io.prometheus.client.hotspot.DefaultExports;
+
 @SuppressWarnings("InfiniteLoopStatement")
 public class NCDriver {
     private static final Logger LOGGER = LogManager.getLogger();
@@ -57,6 +60,20 @@ public class NCDriver {
             ctx.start(logCfgFactory.getConfiguration(ctx, ConfigurationSource.NULL_SOURCE));
             final NodeControllerService ncService = new NodeControllerService(ncConfig, application);
             ncService.start();
+
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    System.out.println("PROMETHEUS VERSION");
+                    DefaultExports.initialize();
+                    try {
+                        HTTPServer server = new HTTPServer(1234);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }).start();
+
             while (true) {
                 Thread.sleep(10000);
             }
