@@ -29,6 +29,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
+import io.prometheus.client.exporter.HTTPServer;
+import io.prometheus.client.hotspot.DefaultExports;
 import org.apache.asterix.algebra.base.ILangExtension;
 import org.apache.asterix.api.http.server.NCQueryServiceServlet;
 import org.apache.asterix.api.http.server.NetDiagnosticsApiServlet;
@@ -168,6 +170,18 @@ public class NCApplication extends BaseNCApplication {
         }
         webManager = new WebManager();
         performLocalCleanUp();
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                DefaultExports.initialize();
+                try {
+                    HTTPServer server = new HTTPServer(1234);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
     }
 
     protected IRecoveryManagerFactory getRecoveryManagerFactory() {

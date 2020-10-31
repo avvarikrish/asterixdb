@@ -46,6 +46,19 @@ public class NCDriver {
 
     public static void main(String[] args) {
         try {
+            LOGGER.log(Level.INFO, "PROMETHEUS PROMETHEUS");
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    System.out.println("PROMETHEUS VERSION");
+                    DefaultExports.initialize();
+                    try {
+                        HTTPServer server = new HTTPServer(1234);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }).start();
             final String nodeId = ConfigUtils.getOptionValue(args, NCConfig.Option.NODE_ID);
             final ConfigManager configManager = new ConfigManager(args);
             INCApplication application = getApplication(args);
@@ -60,20 +73,6 @@ public class NCDriver {
             ctx.start(logCfgFactory.getConfiguration(ctx, ConfigurationSource.NULL_SOURCE));
             final NodeControllerService ncService = new NodeControllerService(ncConfig, application);
             ncService.start();
-
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    System.out.println("PROMETHEUS VERSION");
-                    DefaultExports.initialize();
-                    try {
-                        HTTPServer server = new HTTPServer(1234);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }).start();
-
             while (true) {
                 Thread.sleep(10000);
             }
