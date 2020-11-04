@@ -95,7 +95,8 @@ public class NCConfig extends ControllerConfig {
         PYTHON_CMD(STRING, (String) null),
         PYTHON_ADDITIONAL_PACKAGES(STRING_ARRAY, (String[]) null),
         PYTHON_USE_BUNDLED_MSGPACK(BOOLEAN, true),
-        PYTHON_ARGS(STRING_ARRAY, (String[]) null);
+        PYTHON_ARGS(STRING_ARRAY, (String[]) null),
+        METRICS_PORT(INTEGER, 19007);
 
         private final IOptionType parser;
         private final String defaultValueDescription;
@@ -236,6 +237,8 @@ public class NCConfig extends ControllerConfig {
                     return "True to include bundled msgpack on Python sys.path, false to use system-provided msgpack";
                 case PYTHON_ARGS:
                     return "Python args to pass to Python interpreter";
+                case METRICS_PORT:
+                    return "PORT the NC exports monitoring metrics to";
                 default:
                     throw new IllegalStateException("Not yet implemented: " + this);
             }
@@ -605,5 +608,13 @@ public class NCConfig extends ControllerConfig {
 
     public int getIOQueueSize() {
         return appConfig.getInt(Option.IO_QUEUE_SIZE);
+    }
+
+    public void setMetricsPort(int metricsPort) {
+        configManager.set(nodeId, Option.METRICS_PORT, metricsPort);
+    }
+
+    public int getMetricsPort() {
+        return appConfig.getInt(Option.METRICS_PORT);
     }
 }

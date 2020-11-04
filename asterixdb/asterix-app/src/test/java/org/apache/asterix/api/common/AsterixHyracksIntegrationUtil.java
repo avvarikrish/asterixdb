@@ -34,6 +34,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.BiPredicate;
 import java.util.stream.Stream;
 
+import io.prometheus.client.exporter.HTTPServer;
+import io.prometheus.client.hotspot.DefaultExports;
 import org.apache.asterix.app.io.PersistedResourceRegistry;
 import org.apache.asterix.common.api.IClusterManagementWork.ClusterState;
 import org.apache.asterix.common.api.INcApplicationContext;
@@ -238,6 +240,7 @@ public class AsterixHyracksIntegrationUtil {
         ncConfig.setResultTTL(RESULT_TTL);
         ncConfig.setResultSweepThreshold(1000L);
         ncConfig.setVirtualNC();
+        ncConfig.setMetricsPort(ncConfig.getMetricsPort());
         configManager.set(ControllerConfig.Option.DEFAULT_DIR, joinPath(getDefaultStoragePath(), "asterixdb", ncName));
         return ncConfig;
     }

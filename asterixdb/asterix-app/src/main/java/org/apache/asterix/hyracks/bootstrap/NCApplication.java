@@ -170,18 +170,6 @@ public class NCApplication extends BaseNCApplication {
         }
         webManager = new WebManager();
         performLocalCleanUp();
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                DefaultExports.initialize();
-                try {
-                    HTTPServer server = new HTTPServer(1234);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }).start();
     }
 
     protected IRecoveryManagerFactory getRecoveryManagerFactory() {
@@ -220,6 +208,11 @@ public class NCApplication extends BaseNCApplication {
                 getApplicationContext(), sqlppCompilationProvider.getLanguage(), sqlppCompilationProvider, null));
         apiServer.addServlet(new QueryStatusApiServlet(apiServer.ctx(), getApplicationContext(), QUERY_STATUS));
         apiServer.addServlet(new QueryResultApiServlet(apiServer.ctx(), getApplicationContext(), QUERY_RESULT));
+
+        NCConfig ncConfig = ((NodeControllerService) ncServiceCtx.getControllerService()).getConfiguration();
+        HTTPServer metricsServer = new HTTPServer(ncConfig.getMetricsPort());
+        DefaultExports.initialize();
+
         webManager.add(apiServer);
     }
 
