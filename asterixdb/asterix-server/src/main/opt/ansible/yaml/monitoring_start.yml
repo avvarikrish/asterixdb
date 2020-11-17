@@ -1,0 +1,14 @@
+- hosts: node_exporter
+  tasks:
+    - include_vars: ../conf/instance_settings.yml
+    - include: prometheus_node_exporter.yml
+
+- hosts: prometheus
+  tasks:
+    - include_vars: ../conf/instance_settings.yml
+    - include: prometheus.yml
+
+- hosts: grafana
+  tasks:
+    - include_vars: ../conf/instance_settings.yml
+    - include: grafana.yml

@@ -1,0 +1,13 @@
+- name: config file
+  template:
+    src: ../conf/prometheus.conf.j2
+    dest: "{{ binarydir }}/conf"
+
+- name: Start prometheus service
+  shell: |
+    nohup "prometheus-{{ prometheus_version }}.darwin-amd64/prometheus" --config.file=conf/prometheus.conf.j2 >> logs/prometheus.log 2>&1 &
+    sleep 1
+  args:
+    chdir: "{{ binarydir }}"
+  async: 10
+  poll: 0

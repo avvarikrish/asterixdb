@@ -1,0 +1,8 @@
+- name: Start node_exporter service
+  shell: |
+    nohup "node_exporter-{{ node_exporter_version }}.darwin-amd64/node_exporter" >> logs/node_exporter.log 2>&1 &
+    sleep 1
+  args:
+    chdir: "{{ binarydir }}"
+  async: 10
+  poll: 0

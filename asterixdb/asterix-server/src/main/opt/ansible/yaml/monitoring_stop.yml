@@ -1,0 +1,17 @@
+- hosts: grafana
+  tasks:
+    - name: Stop grafana
+      shell: kill -9 `lsof -i :3000 | grep LISTEN | awk -F ' ' '{print $2}'`
+      failed_when: false
+
+- hosts: prometheus
+  tasks:
+    - name: Stop prometheus
+      shell: kill -9 `lsof -i :9090 | grep LISTEN | awk -F ' ' '{print $2}'`
+      failed_when: false
+
+- hosts: node_exporter
+  tasks:
+    - name: Stop node_exporter
+      shell: kill -9 `lsof -i :9100 | grep LISTEN | awk -F ' ' '{print $2}'`
+      failed_when: false

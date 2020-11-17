@@ -1,0 +1,29 @@
+- hosts: node_exporter
+  tasks:
+    - include_vars: ../conf/instance_settings.yml
+
+    - name: Install prometheus node exporter
+      unarchive:
+        src: "https://github.com/prometheus/node_exporter/releases/download/v{{ node_exporter_version }}/node_exporter-{{ node_exporter_version }}.darwin-amd64.tar.gz"
+        dest: "{{ binarydir }}"
+        remote_src: yes
+
+- hosts: prometheus
+  tasks:
+    - include_vars: ../conf/instance_settings.yml
+
+    - name: Install prometheus
+      unarchive:
+        src: "https://github.com/prometheus/prometheus/releases/download/v{{ prometheus_version }}/prometheus-{{ prometheus_version }}.darwin-amd64.tar.gz"
+        dest: "{{ binarydir }}"
+        remote_src: yes
+
+- hosts: grafana
+  tasks:
+    - include_vars: ../conf/instance_settings.yml
+
+    - name: Install grafana
+      unarchive:
+        src: "https://dl.grafana.com/oss/release/grafana-{{ grafana_version }}.darwin-amd64.tar.gz"
+        dest: "{{ binarydir }}"
+        remote_src: yes
