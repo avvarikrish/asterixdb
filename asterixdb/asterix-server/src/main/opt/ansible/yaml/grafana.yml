@@ -1,6 +1,6 @@
 - name: "Grafana server started"
   shell: |
-    nohup grafana-{{ grafana_version }}/bin/grafana-server --config=grafana-{{ grafana_version }}/conf/defaults.ini  --homepath=grafana-{{ grafana_version }} >> "logs/grafana.log" 2>&1 &
+    nohup grafana-{{ grafana_version }}/bin/grafana-server --config=conf/defaults.ini  --homepath=grafana-{{ grafana_version }} >> "logs/grafana.log" 2>&1 &
     sleep 1
   args:
     chdir: "{{ binarydir }}"
