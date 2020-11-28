@@ -19,6 +19,7 @@
 
 package org.apache.asterix.hyracks.bootstrap;
 
+import static io.prometheus.client.CollectorRegistry.defaultRegistry;
 import static org.apache.asterix.algebra.base.ILangExtension.Language.SQLPP;
 import static org.apache.asterix.api.http.server.ServletConstants.ASTERIX_APP_CONTEXT_INFO_ATTR;
 import static org.apache.asterix.api.http.server.ServletConstants.HYRACKS_CONNECTION_ATTR;
@@ -35,6 +36,8 @@ import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.concurrent.ConcurrentMap;
 
+import io.prometheus.client.exporter.HTTPServer;
+import io.prometheus.client.hotspot.DefaultExports;
 import org.apache.asterix.api.http.IQueryWebServerRegistrant;
 import org.apache.asterix.api.http.server.ActiveStatsApiServlet;
 import org.apache.asterix.api.http.server.ApiServlet;
@@ -106,7 +109,10 @@ import org.apache.hyracks.api.lifecycle.LifeCycleComponentManager;
 import org.apache.hyracks.api.result.IJobResultCallback;
 import org.apache.hyracks.control.cc.BaseCCApplication;
 import org.apache.hyracks.control.cc.ClusterControllerService;
+import org.apache.hyracks.control.cc.JobsExporter;
 import org.apache.hyracks.control.common.controllers.CCConfig;
+import org.apache.hyracks.control.common.controllers.NCConfig;
+import org.apache.hyracks.control.nc.NodeControllerService;
 import org.apache.hyracks.http.api.IServlet;
 import org.apache.hyracks.http.server.HttpServer;
 import org.apache.hyracks.http.server.HttpServerConfig;
@@ -184,6 +190,13 @@ public class CCApplication extends BaseCCApplication {
         ccServiceCtx.addClusterLifecycleListener(nodeJobTracker);
 
         jobCapacityController = new JobCapacityController(controllerService.getResourceManager());
+
+//        ClusterControllerService cc = (ClusterControllerService)appCtx.getServiceContext().getControllerService();;
+//        if (controllerService.getJobManager() == null) {
+//            System.out.println("NULL JOB MANAGER");
+//        } else {
+//            defaultRegistry.register(new JobsExporter(controllerService.getJobManager()));
+//        }
     }
 
     private Map<String, String> parseCredentialMap(String credPath) {
@@ -244,6 +257,12 @@ public class CCApplication extends BaseCCApplication {
         webManager.add(setupWebServer(appCtx.getExternalProperties()));
         webManager.add(setupJSONAPIServer(appCtx.getExternalProperties()));
         webManager.add(setupQueryWebServer(appCtx.getExternalProperties()));
+
+        // TODO(kavvari) Prometheus http servlet extends AbstractServlet with
+        //  Prometheus httpservlet functionality
+        CCConfig ccConfig = ((ClusterControllerService)ccServiceCtx.getControllerService()).getConfig();
+        HTTPServer metricsServer = new HTTPServer(ccConfig.getMetricsPort());
+        DefaultExports.initialize();
     }
 
     @Override

@@ -1,11 +1,11 @@
 [prometheus]
-localhost ansible_connection=local
+localhost
 
 [node_exporter]
-localhost ansible_connection=local
+localhost
 
 [grafana]
-localhost ansible_connection=local
+localhost
 
 [localhost]
 19007

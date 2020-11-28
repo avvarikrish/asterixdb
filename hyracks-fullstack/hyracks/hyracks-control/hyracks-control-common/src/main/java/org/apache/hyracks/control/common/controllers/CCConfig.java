@@ -78,7 +78,8 @@ public class CCConfig extends ControllerConfig {
         CONTROLLER_ID(SHORT, (short) 0x0000),
         KEY_STORE_PATH(STRING),
         TRUST_STORE_PATH(STRING),
-        KEY_STORE_PASSWORD(STRING);
+        KEY_STORE_PASSWORD(STRING),
+        METRICS_PORT(POSITIVE_INTEGER, 19007);
 
         private final IOptionType parser;
         private Object defaultValue;
@@ -198,6 +199,8 @@ public class CCConfig extends ControllerConfig {
                     return "A fully-qualified path to a trust store file that will be used for secured connections";
                 case KEY_STORE_PASSWORD:
                     return "The password to the provided key store";
+                case METRICS_PORT:
+                    return "Port the CC exports monitoring metrics to";
                 default:
                     throw new IllegalStateException("NYI: " + this);
             }
@@ -468,4 +471,11 @@ public class CCConfig extends ControllerConfig {
         configManager.set(Option.TRUST_STORE_PATH, trustStorePath);
     }
 
+    public void setMetricsPort(int metricsPort) {
+        configManager.set(CCConfig.Option.METRICS_PORT, metricsPort);
+    }
+
+    public int getMetricsPort() {
+        return getAppConfig().getInt(CCConfig.Option.METRICS_PORT);
+    }
 }

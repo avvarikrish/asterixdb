@@ -96,7 +96,7 @@ public class NCConfig extends ControllerConfig {
         PYTHON_ADDITIONAL_PACKAGES(STRING_ARRAY, (String[]) null),
         PYTHON_USE_BUNDLED_MSGPACK(BOOLEAN, true),
         PYTHON_ARGS(STRING_ARRAY, (String[]) null),
-        METRICS_PORT(INTEGER, 19007);
+        METRICS_PORT(INTEGER, 19010);
 
         private final IOptionType parser;
         private final String defaultValueDescription;
@@ -238,7 +238,7 @@ public class NCConfig extends ControllerConfig {
                 case PYTHON_ARGS:
                     return "Python args to pass to Python interpreter";
                 case METRICS_PORT:
-                    return "PORT the NC exports monitoring metrics to";
+                    return "Port the NC exports monitoring metrics to";
                 default:
                     throw new IllegalStateException("Not yet implemented: " + this);
             }

@@ -1,8 +1,7 @@
-package org.apache.asterix.api.common;
+package org.apache.hyracks.control.cc;
 
 import io.prometheus.client.Collector;
 import io.prometheus.client.Counter;
-import io.prometheus.client.CounterMetricFamily;
 import io.prometheus.client.GaugeMetricFamily;
 import org.apache.hyracks.api.job.JobStatus;
 import org.apache.hyracks.control.cc.job.IJobManager;
@@ -23,6 +22,10 @@ public class JobsExporter extends Collector {
         this.jobManager = jobManager;
         this.jobsCount = new HashMap<>();
         this.jobsRunIds = new HashSet<Long>();
+
+        for (JobStatus status : JobStatus.values()) {
+            jobsSecondsCounter.labels(status.toString()).inc(0);
+        }
         resetJobCount();
     }
 
@@ -35,6 +38,7 @@ public class JobsExporter extends Collector {
         for (JobRun job : jobManager.getArchivedJobs()) {
             long jobId = job.getJobId().getId();
             if (!jobsRunIds.contains(jobId)) {
+                System.out.println("TIME TAKEN: " + (job.getEndTime()-job.getStartTime()));
                 jobsSecondsCounter.labels(job.getStatus().toString()).inc(job.getEndTime()-job.getStartTime());
             }
             temp.add(jobId);

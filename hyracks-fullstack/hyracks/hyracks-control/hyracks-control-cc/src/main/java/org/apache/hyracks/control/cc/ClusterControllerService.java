@@ -91,6 +91,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.xml.sax.InputSource;
 
+import static io.prometheus.client.CollectorRegistry.defaultRegistry;
+
 public class ClusterControllerService implements IControllerService {
     private static final Logger LOGGER = LogManager.getLogger();
 
@@ -239,7 +241,9 @@ public class ClusterControllerService implements IControllerService {
         workQueue.start();
         connectNCs();
         LOGGER.log(Level.INFO, "Started ClusterControllerService");
+        defaultRegistry.register(new JobsExporter(jobManager));
         notifyApplication();
+
     }
 
     protected void startWebServers() throws Exception {

@@ -1,10 +1,28 @@
+- hosts: all
+  tasks:
+    - include_vars: ../conf/instance_settings.yml
+    - name: Ensure the binarydir exists
+      file:
+        path: "{{ binarydir }}"
+        state: directory
+
+    - name: Ensure the log directory exists
+      file:
+        path: "{{ binarydir }}/logs"
+        state: directory
+
+    - name: Ensure the conf directory exists
+      file:
+        path: "{{ binarydir }}/conf"
+        state: directory
+
 - hosts: node_exporter
   tasks:
     - include_vars: ../conf/instance_settings.yml
 
     - name: Install prometheus node exporter
       unarchive:
-        src: "https://github.com/prometheus/node_exporter/releases/download/v{{ node_exporter_version }}/node_exporter-{{ node_exporter_version }}.darwin-amd64.tar.gz"
+        src: "https://github.com/prometheus/node_exporter/releases/download/v{{ node_exporter_version }}/node_exporter-{{ node_exporter_version }}.{{ host_os }}.tar.gz"
         dest: "{{ binarydir }}"
         remote_src: yes
 
@@ -14,9 +32,14 @@
 
     - name: Install prometheus
       unarchive:
-        src: "https://github.com/prometheus/prometheus/releases/download/v{{ prometheus_version }}/prometheus-{{ prometheus_version }}.darwin-amd64.tar.gz"
+        src: "https://github.com/prometheus/prometheus/releases/download/v{{ prometheus_version }}/prometheus-{{ prometheus_version }}.{{ host_os }}.tar.gz"
         dest: "{{ binarydir }}"
         remote_src: yes
+
+#    - name: Copy prometheus config file
+#      copy:
+#        src: ../conf/prometheus.conf.j2
+#        dest: "{{ binarydir }}/conf/prometheus.conf"
 
 - hosts: grafana
   tasks:
@@ -24,6 +47,16 @@
 
     - name: Install grafana
       unarchive:
-        src: "https://dl.grafana.com/oss/release/grafana-{{ grafana_version }}.darwin-amd64.tar.gz"
+        src: "https://dl.grafana.com/oss/release/grafana-{{ grafana_version }}.{{ host_os }}.tar.gz"
         dest: "{{ binarydir }}"
         remote_src: yes
+
+    - name: Copy grafana config file
+      copy:
+        src: ../conf/defaults.ini
+        dest: "{{ binarydir }}/conf"
+
+    - name: Copy grafana default dashboard
+      copy:
+        src: ../conf/grafana_default.json
+        dest: "{{ binarydir }}/conf"

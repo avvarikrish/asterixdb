@@ -177,7 +177,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "rate(asterix_job_total_milliseconds[30s]) / 1000",
+          "expr": "rate(asterix_job_total_milliseconds[15s]) / 1000",
           "interval": "",
           "legendFormat": "instance={{instance}}, status={{status}}",
           "refId": "A"
@@ -187,7 +187,7 @@
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "Job Time Take",
+      "title": "Job Time Taken",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -225,7 +225,7 @@
       }
     },
     {
-      "collapsed": true,
+      "collapsed": false,
       "datasource": null,
       "gridPos": {
         "h": 1,
@@ -234,106 +234,105 @@
         "y": 9
       },
       "id": 10,
-      "panels": [
-        {
-          "aliasColors": {},
-          "bars": false,
-          "dashLength": 10,
-          "dashes": false,
-          "datasource": null,
-          "fieldConfig": {
-            "defaults": {
-              "custom": {},
-              "unit": "percent"
-            },
-            "overrides": []
-          },
-          "fill": 1,
-          "fillGradient": 0,
-          "gridPos": {
-            "h": 14,
-            "w": 23,
-            "x": 0,
-            "y": 2
-          },
-          "hiddenSeries": false,
-          "id": 14,
-          "legend": {
-            "avg": false,
-            "current": false,
-            "max": false,
-            "min": false,
-            "show": true,
-            "total": false,
-            "values": false
-          },
-          "lines": true,
-          "linewidth": 1,
-          "nullPointMode": "null",
-          "options": {
-            "alertThreshold": true
-          },
-          "percentage": false,
-          "pluginVersion": "7.3.1",
-          "pointradius": 2,
-          "points": false,
-          "renderer": "flot",
-          "seriesOverrides": [],
-          "spaceLength": 10,
-          "stack": false,
-          "steppedLine": false,
-          "targets": [
-            {
-              "expr": "(process_open_fds / process_max_fds) * 100",
-              "interval": "",
-              "legendFormat": "NC: {{instance}}",
-              "refId": "A"
-            }
-          ],
-          "thresholds": [],
-          "timeFrom": null,
-          "timeRegions": [],
-          "timeShift": null,
-          "title": "File Descriptor Usage",
-          "tooltip": {
-            "shared": true,
-            "sort": 0,
-            "value_type": "individual"
-          },
-          "type": "graph",
-          "xaxis": {
-            "buckets": null,
-            "mode": "time",
-            "name": null,
-            "show": true,
-            "values": []
-          },
-          "yaxes": [
-            {
-              "format": "percent",
-              "label": null,
-              "logBase": 1,
-              "max": null,
-              "min": null,
-              "show": true
-            },
-            {
-              "format": "short",
-              "label": null,
-              "logBase": 1,
-              "max": null,
-              "min": null,
-              "show": true
-            }
-          ],
-          "yaxis": {
-            "align": false,
-            "alignLevel": null
-          }
-        }
-      ],
+      "panels": [],
       "title": "File Descriptor Usage",
       "type": "row"
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 14,
+        "w": 23,
+        "x": 0,
+        "y": 10
+      },
+      "hiddenSeries": false,
+      "id": 14,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
+      "percentage": false,
+      "pluginVersion": "7.3.1",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "(process_open_fds / process_max_fds) * 100",
+          "interval": "",
+          "legendFormat": "NC: {{instance}}",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "File Descriptor Usage",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "percent",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
     },
     {
       "collapsed": false,
@@ -342,7 +341,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 10
+        "y": 24
       },
       "id": 8,
       "panels": [],
@@ -368,7 +367,7 @@
         "h": 9,
         "w": 12,
         "x": 0,
-        "y": 11
+        "y": 25
       },
       "hiddenSeries": false,
       "id": 2,
@@ -398,7 +397,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "(irate(process_cpu_seconds_total[1m]) * 100) / ignoring(instance, job) group_left count(count by (cpu) (node_cpu_seconds_total))",
+          "expr": "(irate(process_cpu_seconds_total[1m]) * 100)",
           "interval": "",
           "legendFormat": "NC: {{instance}}",
           "refId": "A"
@@ -464,7 +463,7 @@
         "h": 9,
         "w": 12,
         "x": 12,
-        "y": 11
+        "y": 25
       },
       "hiddenSeries": false,
       "id": 4,
@@ -520,7 +519,6 @@
       },
       "yaxes": [
         {
-          "$$hashKey": "object:337",
           "format": "percent",
           "label": null,
           "logBase": 1,
@@ -529,7 +527,6 @@
           "show": true
         },
         {
-          "$$hashKey": "object:338",
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -562,7 +559,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 20
+        "y": 34
       },
       "hiddenSeries": false,
       "id": 6,
@@ -592,7 +589,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "(irate(process_cpu_seconds_total[1m]) * 100) / ignoring (instance, job) group_left count(count by (cpu) (node_cpu_seconds_total)) / ignoring (instance, job) group_left avg(1-irate(node_cpu_seconds_total{mode=\"idle\"}[1m]))",
+          "expr": "(irate(process_cpu_seconds_total[1m]) * 100) / ignoring (instance, job) group_left avg(1-irate(node_cpu_seconds_total{mode=\"idle\"}[1m]))",
           "interval": "",
           "legendFormat": "NC: {{instance}}",
           "refId": "A"
@@ -647,7 +644,7 @@
     "list": []
   },
   "time": {
-    "from": "now-6h",
+    "from": "now-15m",
     "to": "now"
   },
   "timepicker": {},

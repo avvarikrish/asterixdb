@@ -63,3 +63,8 @@ prometheus_version: 2.22.1
 
 # The version of the grafana
 grafana_version: 7.3.1
+
+# The os to download monitoring binaries
+host_os: darwin-amd64
+
+# ports for nc

@@ -209,10 +209,6 @@ public class NCApplication extends BaseNCApplication {
         apiServer.addServlet(new QueryStatusApiServlet(apiServer.ctx(), getApplicationContext(), QUERY_STATUS));
         apiServer.addServlet(new QueryResultApiServlet(apiServer.ctx(), getApplicationContext(), QUERY_RESULT));
 
-        NCConfig ncConfig = ((NodeControllerService) ncServiceCtx.getControllerService()).getConfiguration();
-        HTTPServer metricsServer = new HTTPServer(ncConfig.getMetricsPort());
-        DefaultExports.initialize();
-
         webManager.add(apiServer);
     }
 
