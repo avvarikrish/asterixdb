@@ -39,23 +39,7 @@ import java.util.concurrent.ConcurrentMap;
 import io.prometheus.client.exporter.HTTPServer;
 import io.prometheus.client.hotspot.DefaultExports;
 import org.apache.asterix.api.http.IQueryWebServerRegistrant;
-import org.apache.asterix.api.http.server.ActiveStatsApiServlet;
-import org.apache.asterix.api.http.server.ApiServlet;
-import org.apache.asterix.api.http.server.BasicAuthServlet;
-import org.apache.asterix.api.http.server.CcQueryCancellationServlet;
-import org.apache.asterix.api.http.server.ClusterApiServlet;
-import org.apache.asterix.api.http.server.ClusterControllerDetailsApiServlet;
-import org.apache.asterix.api.http.server.ConnectorApiServlet;
-import org.apache.asterix.api.http.server.DiagnosticsApiServlet;
-import org.apache.asterix.api.http.server.NodeControllerDetailsApiServlet;
-import org.apache.asterix.api.http.server.QueryResultApiServlet;
-import org.apache.asterix.api.http.server.QueryServiceServlet;
-import org.apache.asterix.api.http.server.QueryStatusApiServlet;
-import org.apache.asterix.api.http.server.RebalanceApiServlet;
-import org.apache.asterix.api.http.server.ServletConstants;
-import org.apache.asterix.api.http.server.ShutdownApiServlet;
-import org.apache.asterix.api.http.server.UdfApiServlet;
-import org.apache.asterix.api.http.server.VersionApiServlet;
+import org.apache.asterix.api.http.server.*;
 import org.apache.asterix.app.active.ActiveNotificationHandler;
 import org.apache.asterix.app.cc.CCExtensionManager;
 import org.apache.asterix.app.config.ConfigValidator;
@@ -257,12 +241,7 @@ public class CCApplication extends BaseCCApplication {
         webManager.add(setupWebServer(appCtx.getExternalProperties()));
         webManager.add(setupJSONAPIServer(appCtx.getExternalProperties()));
         webManager.add(setupQueryWebServer(appCtx.getExternalProperties()));
-
-        // TODO(kavvari) Prometheus http servlet extends AbstractServlet with
-        //  Prometheus httpservlet functionality
-        CCConfig ccConfig = ((ClusterControllerService)ccServiceCtx.getControllerService()).getConfig();
-        HTTPServer metricsServer = new HTTPServer(ccConfig.getMetricsPort());
-        DefaultExports.initialize();
+        webManager.add(setupMetricsServer(appCtx.getExternalProperties()));
     }
 
     @Override
@@ -272,6 +251,18 @@ public class CCApplication extends BaseCCApplication {
         ((ActiveNotificationHandler) appCtx.getActiveNotificationHandler()).stop();
         AsterixStateProxy.unregisterRemoteObject();
         webManager.stop();
+    }
+
+    protected HttpServer setupMetricsServer(ExternalProperties externalProperties) throws Exception {
+        CCConfig ccConfig = ((ClusterControllerService)ccServiceCtx.getControllerService()).getConfig();
+        DefaultExports.initialize();
+        final HttpServerConfig config =
+                HttpServerConfigBuilder.custom().setMaxRequestSize(externalProperties.getMaxWebRequestSize()).build();
+        HttpServer webServer = new HttpServer(webManager.getBosses(), webManager.getWorkers(),
+                ccConfig.getMetricsPort(), config);
+        webServer.setAttribute(HYRACKS_CONNECTION_ATTR, hcc);
+        webServer.addServlet(new MetricsServlet(webServer.ctx(), "/*"));
+        return webServer;
     }
 
     protected HttpServer setupWebServer(ExternalProperties externalProperties) throws Exception {
