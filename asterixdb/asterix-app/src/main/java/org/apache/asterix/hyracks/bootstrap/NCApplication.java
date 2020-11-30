@@ -32,12 +32,7 @@ import java.util.Set;
 import io.prometheus.client.exporter.HTTPServer;
 import io.prometheus.client.hotspot.DefaultExports;
 import org.apache.asterix.algebra.base.ILangExtension;
-import org.apache.asterix.api.http.server.NCQueryServiceServlet;
-import org.apache.asterix.api.http.server.NetDiagnosticsApiServlet;
-import org.apache.asterix.api.http.server.QueryResultApiServlet;
-import org.apache.asterix.api.http.server.QueryStatusApiServlet;
-import org.apache.asterix.api.http.server.ServletConstants;
-import org.apache.asterix.api.http.server.StorageApiServlet;
+import org.apache.asterix.api.http.server.*;
 import org.apache.asterix.app.config.ConfigValidator;
 import org.apache.asterix.app.io.PersistedResourceRegistry;
 import org.apache.asterix.app.nc.NCAppRuntimeContext;
@@ -82,6 +77,8 @@ import org.apache.hyracks.api.control.CcId;
 import org.apache.hyracks.api.exceptions.HyracksDataException;
 import org.apache.hyracks.api.io.IFileDeviceResolver;
 import org.apache.hyracks.api.job.resource.NodeCapacity;
+import org.apache.hyracks.control.cc.ClusterControllerService;
+import org.apache.hyracks.control.common.controllers.CCConfig;
 import org.apache.hyracks.control.common.controllers.NCConfig;
 import org.apache.hyracks.control.nc.BaseNCApplication;
 import org.apache.hyracks.control.nc.NodeControllerService;
@@ -210,6 +207,19 @@ public class NCApplication extends BaseNCApplication {
         apiServer.addServlet(new QueryResultApiServlet(apiServer.ctx(), getApplicationContext(), QUERY_RESULT));
 
         webManager.add(apiServer);
+        webManager.add(setupMetricsServer(getApplicationContext().getExternalProperties()));
+    }
+
+    protected HttpServer setupMetricsServer(ExternalProperties externalProperties) throws Exception {
+        NCConfig ncConfig = ((NodeControllerService)ncServiceCtx.getControllerService()).getConfiguration();
+        DefaultExports.initialize();
+        final HttpServerConfig config =
+                HttpServerConfigBuilder.custom().setMaxRequestSize(externalProperties.getMaxWebRequestSize()).build();
+        HttpServer webServer = new HttpServer(webManager.getBosses(), webManager.getWorkers(),
+                ncConfig.getMetricsPort(), config);
+        webServer.setAttribute(HYRACKS_CONNECTION_ATTR, getApplicationContext().getHcc());
+        webServer.addServlet(new MetricsServlet(webServer.ctx(), "/*"));
+        return webServer;
     }
 
     protected List<AsterixExtension> getExtensions() throws Exception {
