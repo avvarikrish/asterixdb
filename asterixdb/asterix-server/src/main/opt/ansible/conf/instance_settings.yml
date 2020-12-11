@@ -67,4 +67,12 @@ grafana_version: 7.3.1
 # The os to download monitoring binaries
 host_os: darwin-amd64
 
+# ports for cc
+cc_ports:
+  localhost:
+    - "19007"
+
 # ports for nc
+nc_ports:
+  localhost:
+    - "19010"

@@ -18,6 +18,8 @@
  */
 package org.apache.hyracks.control.cc;
 
+import static io.prometheus.client.CollectorRegistry.defaultRegistry;
+
 import java.io.File;
 import java.io.FileReader;
 import java.lang.reflect.Constructor;
@@ -90,8 +92,6 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.xml.sax.InputSource;
-
-import static io.prometheus.client.CollectorRegistry.defaultRegistry;
 
 public class ClusterControllerService implements IControllerService {
     private static final Logger LOGGER = LogManager.getLogger();

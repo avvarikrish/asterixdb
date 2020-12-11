@@ -18,6 +18,7 @@
  */
 package org.apache.asterix.hyracks.bootstrap;
 
+import static io.prometheus.client.CollectorRegistry.defaultRegistry;
 import static org.apache.asterix.api.http.server.ServletConstants.HYRACKS_CONNECTION_ATTR;
 import static org.apache.asterix.common.utils.Servlets.QUERY_RESULT;
 import static org.apache.asterix.common.utils.Servlets.QUERY_SERVICE;
@@ -29,8 +30,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
-import io.prometheus.client.exporter.HTTPServer;
-import io.prometheus.client.hotspot.DefaultExports;
 import org.apache.asterix.algebra.base.ILangExtension;
 import org.apache.asterix.api.http.server.*;
 import org.apache.asterix.app.config.ConfigValidator;
@@ -77,8 +76,6 @@ import org.apache.hyracks.api.control.CcId;
 import org.apache.hyracks.api.exceptions.HyracksDataException;
 import org.apache.hyracks.api.io.IFileDeviceResolver;
 import org.apache.hyracks.api.job.resource.NodeCapacity;
-import org.apache.hyracks.control.cc.ClusterControllerService;
-import org.apache.hyracks.control.common.controllers.CCConfig;
 import org.apache.hyracks.control.common.controllers.NCConfig;
 import org.apache.hyracks.control.nc.BaseNCApplication;
 import org.apache.hyracks.control.nc.NodeControllerService;
@@ -91,6 +88,8 @@ import org.apache.hyracks.util.LoggingConfigUtil;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import io.prometheus.client.hotspot.DefaultExports;
 
 public class NCApplication extends BaseNCApplication {
     private static final Logger LOGGER = LogManager.getLogger();
@@ -166,6 +165,10 @@ public class NCApplication extends BaseNCApplication {
             LOGGER.info("Stores: " + PrintUtil.toString(metadataProperties.getStores()));
         }
         webManager = new WebManager();
+
+        defaultRegistry.register(new StorageExporter(
+                ((PersistentLocalResourceRepository) getApplicationContext().getLocalResourceRepository())
+                        .getStorageStats()));
         performLocalCleanUp();
     }
 
@@ -211,12 +214,12 @@ public class NCApplication extends BaseNCApplication {
     }
 
     protected HttpServer setupMetricsServer(ExternalProperties externalProperties) throws Exception {
-        NCConfig ncConfig = ((NodeControllerService)ncServiceCtx.getControllerService()).getConfiguration();
+        NCConfig ncConfig = ((NodeControllerService) ncServiceCtx.getControllerService()).getConfiguration();
         DefaultExports.initialize();
         final HttpServerConfig config =
                 HttpServerConfigBuilder.custom().setMaxRequestSize(externalProperties.getMaxWebRequestSize()).build();
-        HttpServer webServer = new HttpServer(webManager.getBosses(), webManager.getWorkers(),
-                ncConfig.getMetricsPort(), config);
+        HttpServer webServer =
+                new HttpServer(webManager.getBosses(), webManager.getWorkers(), ncConfig.getMetricsPort(), config);
         webServer.setAttribute(HYRACKS_CONNECTION_ATTR, getApplicationContext().getHcc());
         webServer.addServlet(new MetricsServlet(webServer.ctx(), "/*"));
         return webServer;

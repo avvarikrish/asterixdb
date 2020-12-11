@@ -18,7 +18,6 @@
  */
 package org.apache.asterix.api.common;
 
-import static io.prometheus.client.CollectorRegistry.defaultRegistry;
 import static org.apache.asterix.api.common.AsterixHyracksIntegrationUtil.LoggerHolder.LOGGER;
 import static org.apache.hyracks.util.file.FileUtil.joinPath;
 

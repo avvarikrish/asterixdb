@@ -5,7 +5,7 @@ scrape_configs:
   - job_name: 'prometheus'
     scrape_interval: 2s
     static_configs:
-      - targets: ['localhost:9090']
+      - targets: ['localhost:8080']
 
   - job_name: 'node_exporter'
     scrape_interval: 2s
@@ -16,13 +16,26 @@ scrape_configs:
 
       {%- endfor %}
 
+  - job_name: 'cluster_controller'
+    scrape_interval: 5s
+    static_configs:
+      - targets:
+        {%- for host in groups['ncs'] %}
+        {%- for port in cc_ports[host] %}
+
+        - '{{ host }}:{{ port }}'
+
+        {%- endfor %}
+        {%- endfor %}
+
   - job_name: 'node_controller'
     scrape_interval: 5s
     static_configs:
-      {%- for host in groups['ncs'] %}
-      {%- for port in groups[host] %}
+      - targets:
+        {%- for host in groups['ncs'] %}
+        {%- for port in nc_ports[host] %}
 
-      - targets: ['{{ host }}:{{ port }}']
+        - '{{ host }}:{{ port }}'
 
-      {%- endfor %}
-      {%- endfor %}
+        {%- endfor %}
+        {%- endfor %}

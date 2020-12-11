@@ -1,30 +1,47 @@
 package org.apache.hyracks.control.cc;
 
-import io.prometheus.client.Collector;
-import io.prometheus.client.Counter;
-import io.prometheus.client.GaugeMetricFamily;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+
 import org.apache.hyracks.api.job.JobStatus;
 import org.apache.hyracks.control.cc.job.IJobManager;
 import org.apache.hyracks.control.cc.job.JobRun;
 
-import java.util.*;
+import io.prometheus.client.Collector;
+import io.prometheus.client.Counter;
+import io.prometheus.client.GaugeMetricFamily;
 
 public class JobsExporter extends Collector {
-    private IJobManager jobManager;
+    private final IJobManager jobManager;
     private HashMap<String, Double> jobsCount;
-    private HashSet<Long> jobsRunIds;
+    private HashSet<Long> jobsTerminatedIds;
+    private HashSet<Long> jobsRunningIds;
+    private HashSet<Long> jobsPendingIds;
 
-    private static final Counter jobsSecondsCounter = Counter.build()
-            .name("asterix_job_total_milliseconds").help("total milliseconds taken by jobs")
-            .labelNames("status").register();
+    private static final Counter jobsSecondsCounter = Counter.build().name("asterix_job_total_milliseconds")
+            .help("total milliseconds taken by jobs").labelNames("status").register();
 
-    public JobsExporter(IJobManager jobManager){
+    private static final Counter jobsCountCounter = Counter.build().name("asterix_job_total_count")
+            .help("current total count of jobs").labelNames("status").register();
+
+    public JobsExporter(IJobManager jobManager) {
         this.jobManager = jobManager;
         this.jobsCount = new HashMap<>();
-        this.jobsRunIds = new HashSet<Long>();
+        this.jobsTerminatedIds = new HashSet<>();
+        this.jobsRunningIds = new HashSet<>();
+        this.jobsPendingIds = new HashSet<>();
 
+        // initialize counter to 0
         for (JobStatus status : JobStatus.values()) {
-            jobsSecondsCounter.labels(status.toString()).inc(0);
+            if (status == JobStatus.FAILURE || status == JobStatus.FAILURE_BEFORE_EXECUTION
+                    || status == JobStatus.TERMINATED) {
+                jobsSecondsCounter.labels(status.toString()).inc(0);
+            }
+            jobsCountCounter.labels(status.toString()).inc(0);
         }
         resetJobCount();
     }
@@ -32,25 +49,48 @@ public class JobsExporter extends Collector {
     @Override
     public List<MetricFamilySamples> collect() {
         List<MetricFamilySamples> mfs = new ArrayList<MetricFamilySamples>();
-        GaugeMetricFamily jobsCountGauge = new GaugeMetricFamily("asterix_job_count", "current count of jobs", Arrays.asList("status"));
 
-        HashSet<Long> temp = new HashSet<Long>();
+        HashSet<Long> tempTerminatedIds = new HashSet<Long>();
         for (JobRun job : jobManager.getArchivedJobs()) {
             long jobId = job.getJobId().getId();
-            if (!jobsRunIds.contains(jobId)) {
-                System.out.println("TIME TAKEN: " + (job.getEndTime()-job.getStartTime()));
-                jobsSecondsCounter.labels(job.getStatus().toString()).inc(job.getEndTime()-job.getStartTime());
+            if (!jobsTerminatedIds.contains(jobId)) {
+                String status = job.getStatus().toString();
+                jobsSecondsCounter.labels(status).inc(job.getEndTime() - job.getStartTime());
+                jobsCountCounter.labels(status).inc();
             }
-            temp.add(jobId);
+            tempTerminatedIds.add(jobId);
         }
-        jobsRunIds = temp;
+        jobsTerminatedIds = tempTerminatedIds;
+
+        HashSet<Long> tempRunningIds = new HashSet<Long>();
+        for (JobRun job : jobManager.getRunningJobs()) {
+            long jobId = job.getJobId().getId();
+            if (!jobsRunningIds.contains(jobId)) {
+                jobsCountCounter.labels(job.getStatus().toString()).inc();
+            }
+            tempRunningIds.add(jobId);
+        }
+        jobsRunningIds = tempRunningIds;
+
+        HashSet<Long> tempPendingIds = new HashSet<Long>();
+        for (JobRun job : jobManager.getPendingJobs()) {
+            long jobId = job.getJobId().getId();
+            if (!jobsPendingIds.contains(jobId)) {
+                jobsCountCounter.labels(job.getStatus().toString()).inc();
+            }
+            tempPendingIds.add(jobId);
+        }
+        jobsPendingIds = tempPendingIds;
+
+        GaugeMetricFamily jobsCountGauge =
+                new GaugeMetricFamily("asterix_job_count", "current count of jobs", Arrays.asList("status"));
 
         resetJobCount();
         updateJobCount(jobManager.getRunningJobs());
         updateJobCount(jobManager.getPendingJobs());
         updateJobCount(jobManager.getArchivedJobs());
-        for (Map.Entry jobElement : jobsCount.entrySet()) {
-            jobsCountGauge.addMetric(Arrays.asList((String)jobElement.getKey()), (Double)jobElement.getValue());
+        for (String jobElement : jobsCount.keySet()) {
+            jobsCountGauge.addMetric(Arrays.asList(jobElement), jobsCount.get(jobElement));
         }
 
         mfs.add(jobsCountGauge);
@@ -60,9 +100,7 @@ public class JobsExporter extends Collector {
     private void updateJobCount(Collection<JobRun> jobs) {
         for (JobRun job : jobs) {
             String jobStatus = job.getStatus().toString();
-            if (jobsCount.containsKey(jobStatus)) {
-                jobsCount.put(jobStatus, jobsCount.get(jobStatus) + 1);
-            }
+            jobsCount.put(jobStatus, jobsCount.get(jobStatus) + 1);
         }
     }
 

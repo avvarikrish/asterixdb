@@ -36,11 +36,6 @@
         dest: "{{ binarydir }}"
         remote_src: yes
 
-#    - name: Copy prometheus config file
-#      copy:
-#        src: ../conf/prometheus.conf.j2
-#        dest: "{{ binarydir }}/conf/prometheus.conf"
-
 - hosts: grafana
   tasks:
     - include_vars: ../conf/instance_settings.yml
@@ -55,6 +50,11 @@
       copy:
         src: ../conf/defaults.ini
         dest: "{{ binarydir }}/conf"
+
+    - name: Copy grafana datasources
+      copy:
+        src: ../conf/datasources.yml
+        dest: "{{ binarydir }}/grafana-{{ grafana_version }}/conf/provisioning/datasources"
 
     - name: Copy grafana default dashboard
       copy:

@@ -19,7 +19,6 @@
 
 package org.apache.asterix.hyracks.bootstrap;
 
-import static io.prometheus.client.CollectorRegistry.defaultRegistry;
 import static org.apache.asterix.algebra.base.ILangExtension.Language.SQLPP;
 import static org.apache.asterix.api.http.server.ServletConstants.ASTERIX_APP_CONTEXT_INFO_ATTR;
 import static org.apache.asterix.api.http.server.ServletConstants.HYRACKS_CONNECTION_ATTR;
@@ -36,8 +35,6 @@ import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.concurrent.ConcurrentMap;
 
-import io.prometheus.client.exporter.HTTPServer;
-import io.prometheus.client.hotspot.DefaultExports;
 import org.apache.asterix.api.http.IQueryWebServerRegistrant;
 import org.apache.asterix.api.http.server.*;
 import org.apache.asterix.app.active.ActiveNotificationHandler;
@@ -93,10 +90,7 @@ import org.apache.hyracks.api.lifecycle.LifeCycleComponentManager;
 import org.apache.hyracks.api.result.IJobResultCallback;
 import org.apache.hyracks.control.cc.BaseCCApplication;
 import org.apache.hyracks.control.cc.ClusterControllerService;
-import org.apache.hyracks.control.cc.JobsExporter;
 import org.apache.hyracks.control.common.controllers.CCConfig;
-import org.apache.hyracks.control.common.controllers.NCConfig;
-import org.apache.hyracks.control.nc.NodeControllerService;
 import org.apache.hyracks.http.api.IServlet;
 import org.apache.hyracks.http.server.HttpServer;
 import org.apache.hyracks.http.server.HttpServerConfig;
@@ -108,6 +102,8 @@ import org.apache.hyracks.util.LoggingConfigUtil;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import io.prometheus.client.hotspot.DefaultExports;
 
 public class CCApplication extends BaseCCApplication {
 
@@ -174,13 +170,6 @@ public class CCApplication extends BaseCCApplication {
         ccServiceCtx.addClusterLifecycleListener(nodeJobTracker);
 
         jobCapacityController = new JobCapacityController(controllerService.getResourceManager());
-
-//        ClusterControllerService cc = (ClusterControllerService)appCtx.getServiceContext().getControllerService();;
-//        if (controllerService.getJobManager() == null) {
-//            System.out.println("NULL JOB MANAGER");
-//        } else {
-//            defaultRegistry.register(new JobsExporter(controllerService.getJobManager()));
-//        }
     }
 
     private Map<String, String> parseCredentialMap(String credPath) {
@@ -254,12 +243,12 @@ public class CCApplication extends BaseCCApplication {
     }
 
     protected HttpServer setupMetricsServer(ExternalProperties externalProperties) throws Exception {
-        CCConfig ccConfig = ((ClusterControllerService)ccServiceCtx.getControllerService()).getConfig();
+        CCConfig ccConfig = ((ClusterControllerService) ccServiceCtx.getControllerService()).getConfig();
         DefaultExports.initialize();
         final HttpServerConfig config =
                 HttpServerConfigBuilder.custom().setMaxRequestSize(externalProperties.getMaxWebRequestSize()).build();
-        HttpServer webServer = new HttpServer(webManager.getBosses(), webManager.getWorkers(),
-                ccConfig.getMetricsPort(), config);
+        HttpServer webServer =
+                new HttpServer(webManager.getBosses(), webManager.getWorkers(), ccConfig.getMetricsPort(), config);
         webServer.setAttribute(HYRACKS_CONNECTION_ATTR, hcc);
         webServer.addServlet(new MetricsServlet(webServer.ctx(), "/*"));
         return webServer;

@@ -5,7 +5,7 @@
 
 - name: Start prometheus service
   shell: |
-    nohup "prometheus-{{ prometheus_version }}.darwin-amd64/prometheus" --config.file=conf/prometheus.conf.j2 >> logs/prometheus.log 2>&1 &
+    nohup "prometheus-{{ prometheus_version }}.darwin-amd64/prometheus" --config.file=conf/prometheus.conf.j2 --web.listen-address=:8080 >> logs/prometheus.log 2>&1 &
     sleep 1
   args:
     chdir: "{{ binarydir }}"

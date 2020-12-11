@@ -6,8 +6,3 @@ localhost
 
 [grafana]
 localhost
-
-[localhost]
-19007
-19010
-19011

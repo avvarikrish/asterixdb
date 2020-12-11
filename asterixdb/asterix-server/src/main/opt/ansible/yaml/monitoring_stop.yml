@@ -7,7 +7,7 @@
 - hosts: prometheus
   tasks:
     - name: Stop prometheus
-      shell: kill -9 `lsof -i :9090 | grep LISTEN | awk -F ' ' '{print $2}'`
+      shell: kill -9 `lsof -i :8080 | grep LISTEN | awk -F ' ' '{print $2}'`
       failed_when: false
 
 - hosts: node_exporter
