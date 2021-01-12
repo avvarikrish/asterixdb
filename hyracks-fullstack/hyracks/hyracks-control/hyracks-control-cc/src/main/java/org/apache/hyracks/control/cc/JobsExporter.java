@@ -19,8 +19,6 @@ public class JobsExporter extends Collector {
     private final IJobManager jobManager;
     private HashMap<String, Double> jobsCount;
     private HashSet<Long> jobsTerminatedIds;
-    private HashSet<Long> jobsRunningIds;
-    private HashSet<Long> jobsPendingIds;
 
     private static final Counter jobsSecondsCounter = Counter.build().name("asterix_job_total_milliseconds")
             .help("total milliseconds taken by jobs").labelNames("status").register();
@@ -32,13 +30,11 @@ public class JobsExporter extends Collector {
         this.jobManager = jobManager;
         this.jobsCount = new HashMap<>();
         this.jobsTerminatedIds = new HashSet<>();
-        this.jobsRunningIds = new HashSet<>();
-        this.jobsPendingIds = new HashSet<>();
 
         // initialize counter to 0
         for (JobStatus status : JobStatus.values()) {
-            if (status == JobStatus.FAILURE || status == JobStatus.FAILURE_BEFORE_EXECUTION
-                    || status == JobStatus.TERMINATED) {
+            if (status.equals(JobStatus.FAILURE) || status.equals(JobStatus.FAILURE_BEFORE_EXECUTION)
+                    || status.equals(JobStatus.TERMINATED)) {
                 jobsSecondsCounter.labels(status.toString()).inc(0);
             }
             jobsCountCounter.labels(status.toString()).inc(0);
@@ -62,33 +58,12 @@ public class JobsExporter extends Collector {
         }
         jobsTerminatedIds = tempTerminatedIds;
 
-        HashSet<Long> tempRunningIds = new HashSet<Long>();
-        for (JobRun job : jobManager.getRunningJobs()) {
-            long jobId = job.getJobId().getId();
-            if (!jobsRunningIds.contains(jobId)) {
-                jobsCountCounter.labels(job.getStatus().toString()).inc();
-            }
-            tempRunningIds.add(jobId);
-        }
-        jobsRunningIds = tempRunningIds;
-
-        HashSet<Long> tempPendingIds = new HashSet<Long>();
-        for (JobRun job : jobManager.getPendingJobs()) {
-            long jobId = job.getJobId().getId();
-            if (!jobsPendingIds.contains(jobId)) {
-                jobsCountCounter.labels(job.getStatus().toString()).inc();
-            }
-            tempPendingIds.add(jobId);
-        }
-        jobsPendingIds = tempPendingIds;
-
         GaugeMetricFamily jobsCountGauge =
                 new GaugeMetricFamily("asterix_job_count", "current count of jobs", Arrays.asList("status"));
 
         resetJobCount();
         updateJobCount(jobManager.getRunningJobs());
         updateJobCount(jobManager.getPendingJobs());
-        updateJobCount(jobManager.getArchivedJobs());
         for (String jobElement : jobsCount.keySet()) {
             jobsCountGauge.addMetric(Arrays.asList(jobElement), jobsCount.get(jobElement));
         }
@@ -106,7 +81,9 @@ public class JobsExporter extends Collector {
 
     private void resetJobCount() {
         for (JobStatus status : JobStatus.values()) {
-            this.jobsCount.put(status.toString(), 0.0);
+            if (status.equals(JobStatus.RUNNING) || (status.equals(JobStatus.PENDING))) {
+                this.jobsCount.put(status.toString(), 0.0);
+            }
         }
     }
 }

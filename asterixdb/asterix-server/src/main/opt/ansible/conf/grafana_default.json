@@ -222,6 +222,7 @@
       },
       "yaxes": [
         {
+          "$$hashKey": "object:617",
           "format": "jobs",
           "label": null,
           "logBase": 1,
@@ -230,6 +231,7 @@
           "show": true
         },
         {
+          "$$hashKey": "object:618",
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -433,6 +435,7 @@
       },
       "yaxes": [
         {
+          "$$hashKey": "object:785",
           "format": "s",
           "label": null,
           "logBase": 1,
@@ -441,6 +444,7 @@
           "show": true
         },
         {
+          "$$hashKey": "object:786",
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -531,6 +535,7 @@
       },
       "yaxes": [
         {
+          "$$hashKey": "object:423",
           "format": "s",
           "label": null,
           "logBase": 1,
@@ -539,6 +544,7 @@
           "show": true
         },
         {
+          "$$hashKey": "object:424",
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -642,6 +648,7 @@
       },
       "yaxes": [
         {
+          "$$hashKey": "object:364",
           "format": "percent",
           "label": null,
           "logBase": 1,
@@ -650,6 +657,7 @@
           "show": true
         },
         {
+          "$$hashKey": "object:365",
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -727,7 +735,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "(irate(process_cpu_seconds_total[1m]) * 100)",
+          "expr": "rate(process_cpu_seconds_total[1m]) * 100",
           "interval": "",
           "legendFormat": "{{instance}}",
           "refId": "A"
@@ -753,6 +761,7 @@
       },
       "yaxes": [
         {
+          "$$hashKey": "object:246",
           "format": "percent",
           "label": null,
           "logBase": 1,
@@ -761,6 +770,7 @@
           "show": true
         },
         {
+          "$$hashKey": "object:247",
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -824,7 +834,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "(1-irate(node_cpu_seconds_total{mode=\"idle\"}[1m])) * 100",
+          "expr": "(1-rate(node_cpu_seconds_total{mode=\"idle\"}[1m])) * 100",
           "interval": "",
           "legendFormat": "CPU {{cpu}}",
           "refId": "A"
@@ -850,6 +860,7 @@
       },
       "yaxes": [
         {
+          "$$hashKey": "object:70",
           "format": "percent",
           "label": null,
           "logBase": 1,
@@ -858,6 +869,7 @@
           "show": true
         },
         {
+          "$$hashKey": "object:71",
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -921,7 +933,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "(irate(process_cpu_seconds_total[1m]) * 100) / ignoring (instance, job) group_left avg(1-irate(node_cpu_seconds_total{mode=\"idle\"}[1m]))",
+          "expr": "(rate(process_cpu_seconds_total[1m]) * 100) / ignoring (instance, job) group_left avg(1-rate(node_cpu_seconds_total{mode=\"idle\"}[1m]))",
           "interval": "",
           "legendFormat": "{{instance}}",
           "refId": "A"
@@ -947,6 +959,7 @@
       },
       "yaxes": [
         {
+          "$$hashKey": "object:305",
           "format": "percent",
           "label": null,
           "logBase": 1,
@@ -955,6 +968,7 @@
           "show": true
         },
         {
+          "$$hashKey": "object:306",
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -982,6 +996,6 @@
   "timepicker": {},
   "timezone": "",
   "title": "Asterix Stats",
-  "uid": "OzOUHSJGk",
-  "version": 8
+  "uid": "sGqjn51Mk",
+  "version": 1
 }
