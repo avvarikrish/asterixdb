@@ -167,8 +167,7 @@ public class NCApplication extends BaseNCApplication {
         webManager = new WebManager();
 
         defaultRegistry.register(new StorageExporter(
-                ((PersistentLocalResourceRepository) getApplicationContext().getLocalResourceRepository())
-                        .getStorageStats()));
+                ((PersistentLocalResourceRepository) getApplicationContext().getLocalResourceRepository())));
         performLocalCleanUp();
     }
 
