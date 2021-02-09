@@ -40,7 +40,7 @@ public class StorageExporter extends Collector {
         List<MetricFamilySamples> mfs = new ArrayList<MetricFamilySamples>();
         GaugeMetricFamily storageSizeGauge = new GaugeMetricFamily("asterix_storage_size", "current size of storage",
                 Arrays.asList("index", "dataset", "partition"));
-        
+
         updateStorageStats();
         for (int i = 0; i < storageStats.size(); i++) {
             JsonNode node = storageStats.get(i);
