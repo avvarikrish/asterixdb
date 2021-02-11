@@ -242,6 +242,7 @@ public class ClusterControllerService implements IControllerService {
         connectNCs();
         LOGGER.log(Level.INFO, "Started ClusterControllerService");
         defaultRegistry.register(new JobsExporter(jobManager));
+        defaultRegistry.register(new MemoryExporter(resourceManager));
         notifyApplication();
 
     }
