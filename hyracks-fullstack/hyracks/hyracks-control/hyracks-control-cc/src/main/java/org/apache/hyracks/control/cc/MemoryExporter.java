@@ -25,7 +25,7 @@ public class MemoryExporter extends Collector {
 
         clusterMemorySizeBytes.set(resourceManager.getMaximumCapacity().getAggregatedMemoryByteSize() -
                 resourceManager.getCurrentCapacity().getAggregatedMemoryByteSize());
-        
+
         return mfs;
     }
 }
