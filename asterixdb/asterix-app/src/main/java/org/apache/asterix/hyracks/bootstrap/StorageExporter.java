@@ -3,14 +3,15 @@ package org.apache.asterix.hyracks.bootstrap;
 import static com.fasterxml.jackson.databind.MapperFeature.SORT_PROPERTIES_ALPHABETICALLY;
 import static com.fasterxml.jackson.databind.SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.io.File;
 
 import org.apache.asterix.common.storage.ResourceStorageStats;
-import org.apache.asterix.common.storage.ResourceReference;
 import org.apache.asterix.transaction.management.resource.PersistentLocalResourceRepository;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.hyracks.api.exceptions.HyracksDataException;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -19,8 +20,6 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 
 import io.prometheus.client.Collector;
 import io.prometheus.client.GaugeMetricFamily;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.hyracks.api.exceptions.HyracksDataException;
 
 public class StorageExporter extends Collector {
     private ArrayNode storageStats;
@@ -54,7 +53,7 @@ public class StorageExporter extends Collector {
             Double nodeSize = node.get("totalSize").asDouble();
             String[] tokens = StringUtils.split(node.get("path").toString(), File.separatorChar);
             System.out.println("PATH: " + node.get("path").toString());
-//            System.out.println("DATAVERSE: " + ResourceReference.of(node.get("path").toString()).getDataverse());
+            //            System.out.println("DATAVERSE: " + ResourceReference.of(node.get("path").toString()).getDataverse());
             storageSizeGauge.addMetric(Arrays.asList(partition, tokens[2], dataset, index), nodeSize);
         }
         mfs.add(storageSizeGauge);

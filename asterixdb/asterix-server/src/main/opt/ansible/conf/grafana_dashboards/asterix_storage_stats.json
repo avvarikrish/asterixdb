@@ -1,0 +1,813 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": "-- Grafana --",
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "gnetId": null,
+  "graphTooltip": 0,
+  "id": 4,
+  "iteration": 1614367318678,
+  "links": [
+    {
+      "asDropdown": true,
+      "icon": "external link",
+      "tags": [
+        "asterix",
+        "cc"
+      ],
+      "title": "ClusterController Dashboards",
+      "type": "dashboards"
+    },
+    {
+      "asDropdown": true,
+      "icon": "external link",
+      "tags": [
+        "asterix",
+        "nc"
+      ],
+      "title": "NodeController Dashboards",
+      "type": "dashboards"
+    },
+    {
+      "icon": "external link",
+      "tags": [
+        "asterix",
+        "system"
+      ],
+      "type": "dashboards"
+    }
+  ],
+  "panels": [
+    {
+      "datasource": "Prometheus",
+      "description": "This panel shows the number of bytes Asterix used in storage for each dataset, index, partition.",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "decbytes"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 2,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "mean"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "7.3.1",
+      "targets": [
+        {
+          "expr": "sum(asterix_storage_bytes{instance=~\"$node\", partition=~\"$partition\", dataverse=~\"$dataverse\", dataset=~\"\\\"$dataset\\\"\", index=~\"\\\"$index\\\"\"})",
+          "instant": false,
+          "interval": "",
+          "legendFormat": "instance={{instance}}, dataset={{dataset}}, index={{index}}, partition={{partition}}",
+          "queryType": "randomWalk",
+          "refId": "A"
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Asterix Storage Size",
+      "type": "stat"
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "Prometheus",
+      "description": "This panel shows the breakdown of storage for a given node, partition, dataverse, dataset, and index",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 10
+      },
+      "hiddenSeries": false,
+      "id": 6,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
+      "percentage": false,
+      "pluginVersion": "7.3.1",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "asterix_storage_bytes{instance=~\"$node\", partition=~\"$partition\", dataverse=~\"$dataverse\", dataset=~\"\\\"$dataset\\\"\", index=~\"\\\"$index\\\"\"}",
+          "interval": "",
+          "legendFormat": "node={{instance}}, partition={{partition}}, dataverse={{dataverse}}, dataset={{dataset}}, index={{index}}",
+          "queryType": "randomWalk",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Asterix Storage Size Breakdown",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "Prometheus",
+      "description": "This panel shows the rate of increase of the storage sizes of the composite key of dataset, index, and partition. It uses a least squares regression of all the values from the last 30 seconds to calculate the slope",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "unit": "Bps"
+        },
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 10
+      },
+      "hiddenSeries": false,
+      "id": 4,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
+      "percentage": false,
+      "pluginVersion": "7.3.1",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "deriv(asterix_storage_bytes{instance=~\"$node\", partition=~\"$partition\", dataverse=~\"$dataverse\", dataset=~\"\\\"$dataset\\\"\", index=~\"\\\"$index\\\"\"}[5m])",
+          "interval": "",
+          "legendFormat": "instance={{instance}}, dataset={{dataset}}, index={{index}}, partition={{partition}}",
+          "queryType": "randomWalk",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Asterix Storage Size Rate of Increase/Decrease in the last 5 Minutes",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "Bps",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    }
+  ],
+  "refresh": "5m",
+  "schemaVersion": 26,
+  "style": "dark",
+  "tags": [
+    "asterix",
+    "nc"
+  ],
+  "templating": {
+    "list": [
+      {
+        "allValue": null,
+        "current": {
+          "selected": true,
+          "tags": [],
+          "text": [
+            "All"
+          ],
+          "value": [
+            "$__all"
+          ]
+        },
+        "datasource": "Prometheus",
+        "definition": "label_values(asterix_storage_bytes, instance)",
+        "error": null,
+        "hide": 0,
+        "includeAll": true,
+        "label": null,
+        "multi": true,
+        "name": "node",
+        "options": [
+          {
+            "selected": false,
+            "text": "All",
+            "value": "$__all"
+          },
+          {
+            "selected": true,
+            "text": "localhost:19007",
+            "value": "localhost:19007"
+          },
+          {
+            "selected": false,
+            "text": "localhost:19010",
+            "value": "localhost:19010"
+          }
+        ],
+        "query": "label_values(asterix_storage_bytes, instance)",
+        "refresh": 0,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "tagValuesQuery": "",
+        "tags": [],
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      },
+      {
+        "allValue": null,
+        "current": {
+          "selected": true,
+          "tags": [],
+          "text": [
+            "All"
+          ],
+          "value": [
+            "$__all"
+          ]
+        },
+        "datasource": "Prometheus",
+        "definition": "label_values(asterix_storage_bytes, partition)",
+        "error": null,
+        "hide": 0,
+        "includeAll": true,
+        "label": null,
+        "multi": true,
+        "name": "partition",
+        "options": [
+          {
+            "selected": false,
+            "text": "All",
+            "value": "$__all"
+          },
+          {
+            "selected": true,
+            "text": "0",
+            "value": "0"
+          },
+          {
+            "selected": false,
+            "text": "1",
+            "value": "1"
+          }
+        ],
+        "query": "label_values(asterix_storage_bytes, partition)",
+        "refresh": 0,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "tagValuesQuery": "",
+        "tags": [],
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      },
+      {
+        "allValue": null,
+        "current": {
+          "selected": true,
+          "tags": [],
+          "text": [
+            "All"
+          ],
+          "value": [
+            "$__all"
+          ]
+        },
+        "datasource": "Prometheus",
+        "definition": "label_values(asterix_storage_bytes, dataverse)",
+        "error": null,
+        "hide": 0,
+        "includeAll": true,
+        "label": null,
+        "multi": true,
+        "name": "dataverse",
+        "options": [
+          {
+            "selected": false,
+            "text": "All",
+            "value": "$__all"
+          },
+          {
+            "selected": true,
+            "text": "TinySocial",
+            "value": "TinySocial"
+          },
+          {
+            "selected": false,
+            "text": "Metadata",
+            "value": "Metadata"
+          },
+          {
+            "selected": false,
+            "text": "ShopALot",
+            "value": "ShopALot"
+          }
+        ],
+        "query": "label_values(asterix_storage_bytes, dataverse)",
+        "refresh": 0,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "tagValuesQuery": "",
+        "tags": [],
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      },
+      {
+        "allValue": "",
+        "current": {
+          "selected": true,
+          "tags": [],
+          "text": [
+            "All"
+          ],
+          "value": [
+            "$__all"
+          ]
+        },
+        "datasource": "Prometheus",
+        "definition": "label_values(asterix_storage_bytes, dataset)",
+        "error": null,
+        "hide": 0,
+        "includeAll": true,
+        "label": null,
+        "multi": true,
+        "name": "dataset",
+        "options": [
+          {
+            "selected": true,
+            "text": "All",
+            "value": "$__all"
+          },
+          {
+            "selected": false,
+            "text": "ChirpMessages",
+            "value": "ChirpMessages"
+          },
+          {
+            "selected": false,
+            "text": "ChirpUsers",
+            "value": "ChirpUsers"
+          },
+          {
+            "selected": false,
+            "text": "CompactionPolicy",
+            "value": "CompactionPolicy"
+          },
+          {
+            "selected": false,
+            "text": "Dataset",
+            "value": "Dataset"
+          },
+          {
+            "selected": false,
+            "text": "DatasourceAdapter",
+            "value": "DatasourceAdapter"
+          },
+          {
+            "selected": false,
+            "text": "Datatype",
+            "value": "Datatype"
+          },
+          {
+            "selected": false,
+            "text": "Dataverse",
+            "value": "Dataverse"
+          },
+          {
+            "selected": false,
+            "text": "ExternalFile",
+            "value": "ExternalFile"
+          },
+          {
+            "selected": false,
+            "text": "Feed",
+            "value": "Feed"
+          },
+          {
+            "selected": false,
+            "text": "FeedConnection",
+            "value": "FeedConnection"
+          },
+          {
+            "selected": false,
+            "text": "FeedPolicy",
+            "value": "FeedPolicy"
+          },
+          {
+            "selected": false,
+            "text": "Function",
+            "value": "Function"
+          },
+          {
+            "selected": false,
+            "text": "GleambookMessages",
+            "value": "GleambookMessages"
+          },
+          {
+            "selected": false,
+            "text": "GleambookUsers",
+            "value": "GleambookUsers"
+          },
+          {
+            "selected": false,
+            "text": "Index",
+            "value": "Index"
+          },
+          {
+            "selected": false,
+            "text": "Library",
+            "value": "Library"
+          },
+          {
+            "selected": false,
+            "text": "Node",
+            "value": "Node"
+          },
+          {
+            "selected": false,
+            "text": "Nodegroup",
+            "value": "Nodegroup"
+          },
+          {
+            "selected": false,
+            "text": "Orders",
+            "value": "Orders"
+          },
+          {
+            "selected": false,
+            "text": "Products",
+            "value": "Products"
+          },
+          {
+            "selected": false,
+            "text": "StockedBy",
+            "value": "StockedBy"
+          },
+          {
+            "selected": false,
+            "text": "Stores",
+            "value": "Stores"
+          },
+          {
+            "selected": false,
+            "text": "Synonym",
+            "value": "Synonym"
+          },
+          {
+            "selected": false,
+            "text": "Users",
+            "value": "Users"
+          }
+        ],
+        "query": "label_values(asterix_storage_bytes, dataset)",
+        "refresh": 0,
+        "regex": "\"([^\"]*)\"",
+        "skipUrlSync": false,
+        "sort": 0,
+        "tagValuesQuery": "",
+        "tags": [],
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      },
+      {
+        "allValue": null,
+        "current": {
+          "selected": true,
+          "tags": [],
+          "text": [
+            "All"
+          ],
+          "value": [
+            "$__all"
+          ]
+        },
+        "datasource": "Prometheus",
+        "definition": "label_values(asterix_storage_bytes, index)",
+        "error": null,
+        "hide": 0,
+        "includeAll": true,
+        "label": null,
+        "multi": true,
+        "name": "index",
+        "options": [
+          {
+            "selected": true,
+            "text": "All",
+            "value": "$__all"
+          },
+          {
+            "selected": false,
+            "text": "ChirpMessages",
+            "value": "ChirpMessages"
+          },
+          {
+            "selected": false,
+            "text": "ChirpUsers",
+            "value": "ChirpUsers"
+          },
+          {
+            "selected": false,
+            "text": "CompactionPolicy",
+            "value": "CompactionPolicy"
+          },
+          {
+            "selected": false,
+            "text": "Dataset",
+            "value": "Dataset"
+          },
+          {
+            "selected": false,
+            "text": "DatasourceAdapter",
+            "value": "DatasourceAdapter"
+          },
+          {
+            "selected": false,
+            "text": "Datatype",
+            "value": "Datatype"
+          },
+          {
+            "selected": false,
+            "text": "Dataverse",
+            "value": "Dataverse"
+          },
+          {
+            "selected": false,
+            "text": "ExternalFile",
+            "value": "ExternalFile"
+          },
+          {
+            "selected": false,
+            "text": "Feed",
+            "value": "Feed"
+          },
+          {
+            "selected": false,
+            "text": "FeedConnection",
+            "value": "FeedConnection"
+          },
+          {
+            "selected": false,
+            "text": "FeedPolicy",
+            "value": "FeedPolicy"
+          },
+          {
+            "selected": false,
+            "text": "Function",
+            "value": "Function"
+          },
+          {
+            "selected": false,
+            "text": "GleambookMessages",
+            "value": "GleambookMessages"
+          },
+          {
+            "selected": false,
+            "text": "gbAuthorIdx",
+            "value": "gbAuthorIdx"
+          },
+          {
+            "selected": false,
+            "text": "gbMessageIdx",
+            "value": "gbMessageIdx"
+          },
+          {
+            "selected": false,
+            "text": "gbSenderLocIndex",
+            "value": "gbSenderLocIndex"
+          },
+          {
+            "selected": false,
+            "text": "GleambookUsers",
+            "value": "GleambookUsers"
+          },
+          {
+            "selected": false,
+            "text": "gbUserSinceIdx",
+            "value": "gbUserSinceIdx"
+          },
+          {
+            "selected": false,
+            "text": "Index",
+            "value": "Index"
+          },
+          {
+            "selected": false,
+            "text": "Library",
+            "value": "Library"
+          },
+          {
+            "selected": false,
+            "text": "Node",
+            "value": "Node"
+          },
+          {
+            "selected": false,
+            "text": "Nodegroup",
+            "value": "Nodegroup"
+          },
+          {
+            "selected": false,
+            "text": "Orders",
+            "value": "Orders"
+          },
+          {
+            "selected": false,
+            "text": "Products",
+            "value": "Products"
+          },
+          {
+            "selected": false,
+            "text": "StockedBy",
+            "value": "StockedBy"
+          },
+          {
+            "selected": false,
+            "text": "Stores",
+            "value": "Stores"
+          },
+          {
+            "selected": false,
+            "text": "Synonym",
+            "value": "Synonym"
+          },
+          {
+            "selected": false,
+            "text": "Users",
+            "value": "Users"
+          }
+        ],
+        "query": "label_values(asterix_storage_bytes, index)",
+        "refresh": 0,
+        "regex": "\"([^\"]*)\"",
+        "skipUrlSync": false,
+        "sort": 0,
+        "tagValuesQuery": "",
+        "tags": [],
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      }
+    ]
+  },
+  "time": {
+    "from": "now-5m",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "",
+  "title": "Asterix Storage Stats",
+  "uid": "RSzD_oEMz",
+  "version": 18
+}
